@@ -39,12 +39,13 @@
 			this.btnSendToClipboard = new System.Windows.Forms.Button();
 			this.statusStrip = new System.Windows.Forms.StatusStrip();
 			this.toolStripStatusLabel = new System.Windows.Forms.ToolStripStatusLabel();
+			this.backgroundWorker = new System.ComponentModel.BackgroundWorker();
 			this.statusStrip.SuspendLayout();
 			this.SuspendLayout();
 			// 
 			// btnSearch
 			// 
-			this.btnSearch.Anchor = System.Windows.Forms.AnchorStyles.Right;
+			this.btnSearch.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
 			this.btnSearch.Location = new System.Drawing.Point(323, 227);
 			this.btnSearch.Name = "btnSearch";
 			this.btnSearch.Size = new System.Drawing.Size(75, 23);
@@ -55,7 +56,7 @@
 			// 
 			// btnCancel
 			// 
-			this.btnCancel.Anchor = System.Windows.Forms.AnchorStyles.Right;
+			this.btnCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
 			this.btnCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
 			this.btnCancel.Location = new System.Drawing.Point(404, 227);
 			this.btnCancel.Name = "btnCancel";
@@ -123,6 +124,7 @@
 			// 
 			// btnSendToClipboard
 			// 
+			this.btnSendToClipboard.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
 			this.btnSendToClipboard.Location = new System.Drawing.Point(323, 143);
 			this.btnSendToClipboard.Name = "btnSendToClipboard";
 			this.btnSendToClipboard.Size = new System.Drawing.Size(156, 23);
@@ -135,24 +137,32 @@
 			// 
 			this.statusStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.toolStripStatusLabel});
-			this.statusStrip.Location = new System.Drawing.Point(0, 264);
+			this.statusStrip.Location = new System.Drawing.Point(0, 261);
 			this.statusStrip.Name = "statusStrip";
-			this.statusStrip.Size = new System.Drawing.Size(491, 22);
+			this.statusStrip.Size = new System.Drawing.Size(491, 25);
 			this.statusStrip.TabIndex = 8;
 			this.statusStrip.Text = "statusStrip1";
 			// 
 			// toolStripStatusLabel
 			// 
+			this.toolStripStatusLabel.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
 			this.toolStripStatusLabel.Name = "toolStripStatusLabel";
-			this.toolStripStatusLabel.Size = new System.Drawing.Size(0, 17);
+			this.toolStripStatusLabel.Size = new System.Drawing.Size(445, 20);
+			this.toolStripStatusLabel.Spring = true;
+			this.toolStripStatusLabel.Text = " ";
+			this.toolStripStatusLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+			// 
+			// backgroundWorker
+			// 
+			this.backgroundWorker.WorkerSupportsCancellation = true;
+			this.backgroundWorker.DoWork += new System.ComponentModel.DoWorkEventHandler(this.ScanFiles);
+			this.backgroundWorker.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.ScanFilesCompleted);
 			// 
 			// frmMain
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.CancelButton = this.btnCancel;
 			this.ClientSize = new System.Drawing.Size(491, 286);
-			this.ControlBox = false;
 			this.Controls.Add(this.statusStrip);
 			this.Controls.Add(this.btnSendToClipboard);
 			this.Controls.Add(this.label2);
@@ -162,9 +172,9 @@
 			this.Controls.Add(this.label1);
 			this.Controls.Add(this.btnCancel);
 			this.Controls.Add(this.btnSearch);
-			this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.Fixed3D;
 			this.Name = "frmMain";
 			this.Text = "Find Missing Fonts";
+			this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.frmMain_FormClosing);
 			this.Load += new System.EventHandler(this.frmMain_Load);
 			this.statusStrip.ResumeLayout(false);
 			this.statusStrip.PerformLayout();
@@ -186,6 +196,7 @@
 		private System.Windows.Forms.Button btnSendToClipboard;
 		private System.Windows.Forms.StatusStrip statusStrip;
 		private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel;
+		private System.ComponentModel.BackgroundWorker backgroundWorker;
 	}
 }
 

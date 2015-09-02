@@ -4,9 +4,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
 using Word = Microsoft.Office.Interop.Word;
 
 namespace FindMissingFonts
@@ -16,8 +13,8 @@ namespace FindMissingFonts
 		public Action<string> OnError = null;
 		public Action<string> OnMessage = null;
 
-		private WordprocessingDocument wordprocessingDocument = null;
-		private bool disposed = false;
+		private WordprocessingDocument _wordprocessingDocument = null;
+		private bool _disposed = false;
 
 		/// <summary>
 		/// Load the document file into the Open XML WordprocessingDocument object
@@ -29,37 +26,38 @@ namespace FindMissingFonts
 			Exception exHolder = null;
 			try
 			{
-				wordprocessingDocument = WordprocessingDocument.Open( path, true );
+				_wordprocessingDocument = WordprocessingDocument.Open( path, true );
 			}
 			catch( Exception ex )
 			{
-				wordprocessingDocument = null;
+				_wordprocessingDocument = null;
 				exHolder = ex;
 			}
-			if( wordprocessingDocument == null )
+			if( _wordprocessingDocument == null )
 			{
+				string tempfile = Path.GetTempPath() + "tempfile.docx";
 				Word.Application wordApp = null;
 				try
 				{
 					wordApp = new Word.Application();
-					wordApp.Visible = true;
+					wordApp.Visible = false;
 					Word.Document wordDoc = wordApp.Documents.Open( path );
-					object filename = "c:\\temp\\tempfile.docx";
+					object filename = tempfile;
 					object saveFormat = Word.WdSaveFormat.wdFormatDocumentDefault;
 					wordDoc.SaveAs2( FileName: ref filename, FileFormat: ref saveFormat );
 					object doNotSaveChanges = Word.WdSaveOptions.wdDoNotSaveChanges;
-					wordDoc.Close( SaveChanges: ref doNotSaveChanges );
+					( (Word._Document)wordDoc ).Close( SaveChanges: ref doNotSaveChanges );
 					wordDoc = null;
-					wordApp.Quit( SaveChanges: Word.WdSaveOptions.wdDoNotSaveChanges );
+					( (Word._Application)wordApp ).Quit( SaveChanges: Word.WdSaveOptions.wdDoNotSaveChanges );
 					wordApp = null;
 
-					wordprocessingDocument = WordprocessingDocument.Open( "c:\\temp\\tempfile.docx", true );
+					_wordprocessingDocument = WordprocessingDocument.Open( tempfile, true );
 				}
 				catch( Exception ex )
 				{
 					if( wordApp != null )
 					{
-						wordApp.Quit( SaveChanges: Word.WdSaveOptions.wdDoNotSaveChanges );
+						( (Word._Application)wordApp ).Quit( SaveChanges: Word.WdSaveOptions.wdDoNotSaveChanges );
 						wordApp = null;
 					}
 					if( exHolder != null )
@@ -78,7 +76,7 @@ namespace FindMissingFonts
 					{
 						try
 						{
-							File.Delete( "c:\\temp\\tempfile.docx" );
+							File.Delete( tempfile );
 						}
 						catch( Exception )
 						{
@@ -96,8 +94,8 @@ namespace FindMissingFonts
 		{
 			get
 			{
-				// get all fonts of the word document 
-				List<string> fonts = wordprocessingDocument
+				// get all fonts of the word document
+				List<string> fonts = _wordprocessingDocument
 					.MainDocumentPart
 					.Document
 					.Descendants<RunFonts>()
@@ -144,17 +142,17 @@ namespace FindMissingFonts
 
 		protected virtual void Dispose( bool disposing )
 		{
-			if( disposed )
+			if( _disposed )
 				return;
 
 			if( disposing )
 			{
-				if( wordprocessingDocument != null )
+				if( _wordprocessingDocument != null )
 				{
-					wordprocessingDocument.Dispose();
+					_wordprocessingDocument.Dispose();
 				}
 			}
-			disposed = true;
+			_disposed = true;
 		}
 	}
 }
